@@ -1,0 +1,135 @@
+solace:
+  java:
+    host: 10.184.50.81:55555,10.184.50.82:55555
+    vpn: MES
+    client-username: default
+    client-password: admin
+    client-name: send-tst-ap-0001
+    reconnect-retries: 5
+    retries-per-host: 5
+
+server:
+  shutdown: graceful
+
+ap:
+  running-type: sender
+  sender:
+    queue-prefix: SVM_DEV_WFS
+    sender-count: 10
+    tps-per-sender: 100
+    retention-per-sender-sec: 100
+  receiver:
+    queue-prefix: SVM_DEV_WFS
+    receiver-mode: AA or AS
+    receiver-latency-ms: 100-150
+
+
+spring:
+  lifecycle:
+    timeout-per-shutdown-phase: 30s
+  sleuth.log.slf4j.enabled: true
+
+  # ??? cloud 유레카?
+  cloud:
+    config:
+      uri: http://10.250.111.57:10001
+
+  datasource:
+    #mariadb
+    #driver-class-name: org.mariadb.jdbc.Driver
+    #url: jdbc:mariadb://10.250.111.57:3306/spcadmsi
+    #username: spcadm
+    #password: spcadm
+
+    #mssql
+    #driverClassName: com.microsoft.sqlserver.jdbc.SQLServerDriver
+    #url: jdbc:sqlserver://10.250.111.57:1433;databaseName=miip;currentSchema=spcadm
+    #username: spcadm
+    #password: spcadm
+
+    #oracle
+    #oracle
+    driver-class-name: oracle.jdbc.OracleDriver
+    url: jdbc:oracle:thin:@10.184.50.192:1521:svmpdb2
+    username: mesadm
+    password: absolics12#
+
+    hikari:
+      minimum-idle: 5
+      maximum-pool-size: 5
+      connection-timeout: 30000
+      validation-timeout: 5000
+      idle-timeout: 600000
+      max-lifetime: 1800000
+      auto-commit: true
+
+      data-source-properties:
+        cachePrepStmts: true
+        prepStmtCacheSize: 250
+        prepStmtCacheSqlLimit: 2048
+        useServerPrepStmts: true
+        useLocalSessionState: true
+        rewriteBatchedStatements: true
+        cacheResultSetMetadata: true
+        cacheServerConfiguration: true
+        elideSetAutoCommits: true
+        maintainTimeStats: false
+
+  jpa:
+    #    hibernate:
+    #      naming:
+    #        physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
+
+    show-sql: true
+
+    #maraidb
+    #database-platform: org.hibernate.dialect.MySQL5InnoDBDialect
+
+    #MSSQL
+    #database-platform: org.hibernate.dialect.SQLServer2012Dialect
+
+    #oracle
+    database-platform: org.hibernate.dialect.OracleDialect
+
+    properties:
+      hibernate:
+        temp:
+          use_jdbc_metadata_defaults: false
+        format_sql: true
+        jdbc:
+          lob:
+            non_contextual_creation: true
+          batch_size: 100
+        order_inserts: true
+        order_updates: true
+    open-in-view: false
+
+  ## MULTIPART (MultipartProperties)
+  # Enable multipart uploads
+  servlet:
+    multipart:
+      enabled: true
+      # Threshold after which files are written to disk.
+      file-size-threshold: 2KB
+      # Max file size.
+      max-file-size: 200MB
+      # Max Request Size
+      max-request-size: 215MB
+
+#  kafka:
+#    bootstrap-servers: 10.250.111.57:8092
+#    consumer:
+#      auto-offset-reset: latest
+#      group: engine
+#      object:
+#        topics: DCOL
+#    numPartitions: 1
+#    replicationFactor: 1
+thread:
+  queue:
+    readcount: 2
+  pool:
+    mincount: 5
+    maxcount: 10
+  log:
+    enable: true
